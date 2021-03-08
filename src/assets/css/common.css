@@ -1,0 +1,89 @@
+a {
+    text-decoration: none;
+    color: #525f66;
+}
+
+.clearfix {
+    display: block;
+}
+
+li {
+    list-style: none;
+}
+
+img {
+    border: 0;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.ecv2_header {
+    height: 40px;
+    background-color: #f6f6f6;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.ecv2_header_tools {
+    color: #666666;
+}
+
+.ecv2_container {
+    width: 1200px;
+    height: 40px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.ecv2_header_tools .fl>ul {
+    margin-top: 0;
+}
+
+.ecv2_header_tools .fl>ul>li {
+    float: left;
+    line-height: 20px;
+    position: relative;
+    padding: 10px 16px;
+    font-size: 12px;
+    border-right: 1px solid #f6f6f6;
+    border-left: 1px solid #f6f6f6;
+}
+
+.ecv2_header_tools i {
+    display: inline-block;
+    width: 12px;
+    height: 8px;
+    margin-left: 10px;
+    background: url(https://static-test.educity.cn/educity/pc/cmsng/img/index/icon_sub_down.png) no-repeat;
+}
+
+.ecv2_header ul>li>a {
+    text-decoration: none;
+    color: #525f66;
+}
+
+.ecv2_header_tools img {
+    vertical-align: -4px;
+}
+
+.ecv2_header_tools .fr {
+    line-height: 40px;
+}
+
+.ecv2_header_tools .fr span {
+    margin-left: 28px;
+}
+
+.ecv2_header_tools .fr a {
+    color: #666;
+    margin: 0;
+}
+
+.ecv2_header_tools .fr .login_res a {
+    margin: 0 16px;
+}
