@@ -1,6 +1,27 @@
+html {
+    color: #333;
+    /* background: #fff; */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-rendering: optimizelegibility;
+    font-family: Helvetica Neue, PingFang SC, Verdana, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font: 300 1em/1.8 PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, Helvetica, sans-serif;
+}
+
+fieldset,
+img {
+    border: 0;
+}
+
 a {
     text-decoration: none;
-    color: #525f66;
 }
 
 .clearfix {
@@ -23,67 +44,49 @@ img {
     float: right;
 }
 
-.ecv2_header {
-    height: 40px;
-    background-color: #f6f6f6;
-    border-bottom: 1px solid #e6e6e6;
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-.ecv2_header_tools {
-    color: #666666;
+.column {
+    display: flex;
+    flex-direction: column;
 }
 
-.ecv2_container {
-    width: 1200px;
-    height: 40px;
-    margin: 0 auto;
+.btn {
+    outline: none;
+    background: #fff;
+    cursor: pointer;
+    display: block;
+    line-height: 31px;
+    width: 105px;
+    height: 31px;
+    border: 1px solid #fa8919;
+    color: #fa8919;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.swiper-container {
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    z-index: 1;
 }
 
-.ecv2_header_tools .fl>ul {
-    margin-top: 0;
-}
-
-.ecv2_header_tools .fl>ul>li {
-    float: left;
-    line-height: 20px;
+.swiper-slide {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
     position: relative;
-    padding: 10px 16px;
-    font-size: 12px;
-    border-right: 1px solid #f6f6f6;
-    border-left: 1px solid #f6f6f6;
-}
-
-.ecv2_header_tools i {
-    display: inline-block;
-    width: 12px;
-    height: 8px;
-    margin-left: 10px;
-    background: url(https://static-test.educity.cn/educity/pc/cmsng/img/index/icon_sub_down.png) no-repeat;
-}
-
-.ecv2_header ul>li>a {
-    text-decoration: none;
-    color: #525f66;
-}
-
-.ecv2_header_tools img {
-    vertical-align: -4px;
-}
-
-.ecv2_header_tools .fr {
-    line-height: 40px;
-}
-
-.ecv2_header_tools .fr span {
-    margin-left: 28px;
-}
-
-.ecv2_header_tools .fr a {
-    color: #666;
-    margin: 0;
-}
-
-.ecv2_header_tools .fr .login_res a {
-    margin: 0 16px;
+    transition-property: -webkit-transform;
+    transition-property: transform;
+    transition-property: transform, -webkit-transform;
 }
