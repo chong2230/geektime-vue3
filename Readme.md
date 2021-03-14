@@ -24,4 +24,4 @@ npm install qs --save
 
 #### 屏幕截图
 
-![图1](https://github.com/chong2230/gittime-vue3/raw/main/screenshot/1.jpg)
+![图1](https://github.com/chong2230/geektime-vue3/raw/main/screenshot/1.jpg)
