@@ -1,5 +1,5 @@
 <template>
-    <div class="indexPage">
+    <div class="page index-page">
         <!-- <HeaderTools /> -->
         <Header :menus="menus" />
         <div class="main row">
@@ -311,10 +311,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.banner-swiper img {
-    width: 920px;
-    height: 450px;
-    object-fit: contain;
+.page {
+    min-width: 1200px;
 }
 .main {
     justify-content: space-between;
@@ -382,11 +380,14 @@ export default {
                         width: 36px;
                         height: 36px;
                         border-radius: 5px;
+                        object-fit: cover;
                     }
                 }
             }
         }
         .products {
+            margin-top: 30px;
+            width: 711px;
             .product {
                 justify-content: space-between;
                 .p-left {
