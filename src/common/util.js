@@ -48,3 +48,19 @@
 	m = m < 10 ? '0' + m : m;
 	return M+'月'+D+'日'+'（'+days[day]+'）'+' '+h+':'+m;
 }
+
+/**
+ * 通过link字符串获取url
+ */
+export const getLink = (link, name='url') => {
+	let arr = link.split('?');
+	if (arr.length > 1) {
+		let str = arr[1];
+		let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		let r = str.match(reg);
+		if (r != null) {
+			return decodeURIComponent(r[2])
+		}
+	}            
+	return ''
+}
