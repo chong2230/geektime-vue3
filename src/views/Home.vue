@@ -15,46 +15,12 @@
                                 <div class="name">{{item.name}}</div>
                                 <div class="desc">{{item.product_count}}门课程</div>
                             </div>
-                            <img :src="item.icon" />
+                            <img class="lecture-img" :src="item.icon" />
                         </li>
                     </ul>
                 </div>
                 <div class="products">
-                    <div class="product row" v-for="item in productInfos" :key="item.id">
-                        <div class="p-left">
-                            <a>
-                                <img :src="item.cover.rectangle" />
-                            </a>
-                        </div>
-                        <div class="p-right">
-                            <div class="p-info">
-                                <div class="title-sec row">
-                                    <h2 class="p-title">{{item.title}}</h2>
-                                    <p class="unit-sub">{{item.unit}} <em></em>| {{item.extra.sub.count}} </p>
-                                </div>
-                                <div class="intro">{{item.author.name + ' ' + item.author.intro}}</div>
-                            </div>
-                            <div class="p-article">
-                                <ul>
-                                    <li v-for="sitem in productArticles[item.id]" :key="sitem.id">
-                                        <a :class="{free: sitem.could_preview}">
-                                            <span v-if="sitem.could_preview">免费</span>
-                                            {{sitem.title}}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="p-price row">
-                                <p class="price-sec">
-                                    <span>{{getSaleLabel(item.price)}}</span>
-                                    <s>原价 ¥{{item.price.market/100}}</s>
-                                </p>
-                                <div class="handle-box">
-                                    <button class="handle-btn">立即订阅</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <Product :productInfos="productInfos" :productArticles="productArticles"></Product>
                 </div>
             </div>
             <div class="right">
@@ -155,16 +121,18 @@
 </template>
 <script>
 import { reactive, computed, toRefs, onMounted, onUpdated, onUnmounted } from 'vue'
-// import HeaderTools from '../components/HeaderTools.vue'
-import Header from '../components/Header.vue'
 import { getCurrentInstance } from '@vue/runtime-core'
+// import HeaderTools from '../components/HeaderTools.vue'
+import Header from '@/components/Header.vue'
+import Product from '@/components/Product.vue';
 import Mock from '@/mock/index.js';
 import { formatLiveTime } from '@/common/util.js';
 
 export default {
     components: {
         // HeaderTools,
-        Header
+        Header,
+        Product
     },
     setup() {
         const { ctx } = getCurrentInstance();
@@ -273,25 +241,7 @@ export default {
 
         const getLiveTime = (time) => {
             return formatLiveTime(time);
-        }
-
-        const getSaleLabel = (price) => {
-            let type = '';
-            switch(price.sale_type) {
-                case 1:
-                    break;
-                case 2:
-                    type = '限时';
-                    break;    
-                case 3:
-                    type = '拼团';
-                    break; 
-                default:
-                    break;
-
-            }
-            return type + ' ¥' + price.sale/100;
-        }
+        }        
 
         onUpdated(() => {
             console.log('onUpdated')
@@ -304,8 +254,7 @@ export default {
         return {
             ...toRefs(state),
             getLink,
-            getLiveTime,
-            getSaleLabel
+            getLiveTime
         };
     },
 }
@@ -322,370 +271,226 @@ export default {
     margin: 0 auto 60px;
     padding-top: 50px;
     .left {
-        .explore {
-            .top {
-                justify-content: space-between;
-                padding-right: 8px;
-                .title {
-                    font-size: 16px;
-                    font-weight: 500;
-                    color: #353535;
-                }
-                .view-all {
-                    font-size: 13px;
-                    font-weight: 400;
-                    color: #888;
-                    cursor: pointer;
-                }
-            }
-            ul {
-                margin-top: 12px;
-                li {
-                    position: relative;
-                    justify-content: space-between;
-                    width: 171px;
-                    height: 56px;
-                    padding: 0 13px 0 10px;
-                    margin-right: 9px;
-                    vertical-align: top;
-                    background: #f6f7fa;
-                    border-radius: 5px;
-                    box-sizing: border-box;
-                    cursor: pointer;
-                    .lecture-info {
-                        height: 32px;
-                        .name {
-                            width: 112px;
-                            line-height: 18px;
-                            font-size: 14px;
-                            font-weight: 500;
-                            color: #353535;
-                            white-space: nowrap;
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                            transition: color 0.2s ease;
-                        }
-                        .desc {
-                            margin-top: -3px;
-                            margin-left: -11px;
-                            font-size: 13px;
-                            font-weight: 400;
-                            color: #888;
-                            transform: scale(0.8);
-                        }
-                    }
-                    img {
-                        position: relative;
-                        z-index: 10;
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 5px;
-                        object-fit: cover;
-                    }
-                }
-            }
-        }
+        
         .products {
             margin-top: 30px;
             width: 711px;
-            .product {
-                justify-content: space-between;
-                .p-left {
-                    flex: 0 0 127px;
-                    width: 127px;
-                    height: 168px;
-                    a {
-                        position: relative;
-                        display: block;
-                        width: 100%;
-                        height: 100%;
-                        background: #eee;
-                        border-radius: 5px;
-                        img {
-                            width: 100%;
-                            height: 100%;
-                            border-radius: 5px;
-                        }
-                    }
-                }
-                .p-right {
-                    width: calc(100% - 147px);
-                    padding: 40px 0;
-                    margin-left: 20px;
-                    border-bottom: 1px solid rgba(233,233,233,0.6);
-                    .p-info {
-                        cursor: point;
-                        .title-sec {
-                            justify-content: space-between;
-                            padding-top: 3px;
-                            h2 {
-                                font-size: 20px;
-                                color: #404040;
-                                font-weight: 500;
-                                line-height: 24px;
-                                margin-right: 10px;
-                            }
-                            p {
-                                font-size: 14px;
-                                color: #888;
-                                font-weight: 300;
-                                line-height: 24px;
-                                white-space: nowrap;
-                                letter-spacing: 1px;
-                                em {
-                                    font-weight: 300;
-                                }
-                            }
-                        }
-                        .intro {
-                            margin-top: 5px;
-                            max-width: 100%;
-                            color: #404040;
-                            font-size: 14px;
-                            font-weight: 400;
-                            white-space: nowrap;
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                        }
-                    }
-                    .p-article {
-                        height: 80px;
-                        box-sizing: border-box;
-                        padding: 5px 0 16px;
-                        ul {
-                            display: flex;
-                            flex-wrap: wrap;
-                            li {
-                                width: 50%;
-                                box-sizing: border-box;
-                                align-items: center;
-                                display: flex;
-                                margin-top: 10px;   
-                                a {
-                                    flex: 1;
-                                    white-space: nowrap;
-                                    overflow: hidden;
-                                    text-overflow: ellipsis;
-                                    height: 20px;
-                                    line-height: 20px;
-                                    color: #404040;
-                                    font-size: 13px;
-                                    font-weight: 400;
-                                    span {
-                                        display: block;
-                                        position: absolute;
-                                        top: 3px;
-                                        left: 0;
-                                        width: 48px;
-                                        height: 26px;
-                                        text-align: center;
-                                        line-height: 26px;
-                                        font-size: 18px;
-                                        font-weight: 400;
-                                        color: #fa8919;
-                                        transform: scale(0.5);
-                                        transform-origin: top left;
-                                        border: 1px solid #fa8919;
-                                        border-radius: 6px;
-                                    }
-                                }    
-                                a.free {
-                                    position: relative;
-                                    padding-left: 30px;
-                                }                         
-                            }
-                            li:nth-child(2n-1) {
-                                padding-right: 20px;
-                            }
-                        }
-                    }
-                    .p-price {
-                        height: 35px;
-                        justify-content: space-between;
-                        p {
-                            display: flex;
-                            align-items: center;
-                            span {
-                                color: #fa8919;
-                                font-size: 18px;
-                                font-weight: 400;
-                            }
-                            s {
-                                font-weight: 400;
-                                margin-left: 10px;
-                                font-size: 13px;
-                                letter-spacing: 1px;
-                                color: #888;
-                            }
-                        }
-                        .handle-btn {
-                            border: none;
-                            outline: none;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            width: 92px;
-                            height: 33px;
-                            color: #fff;
-                            background: #fa8919;
-                            border-radius: 5px;
-                            font-size: 14px;
-                            cursor: pointer;
-                            font-weight: 400;
-                        }
-                    }
-                }
-            }
+            
         }
     }
     .right {
         width: 305px;
         padding-bottom: 50px;
         .content {
-            .my-course {
-                display: flex;
-                flex: 0 0 110px;
-                justify-content: flex-end;
-                margin-bottom: 20px;
-                .course-btn {
-                    margin-right: 12px;
-                    width: 120px;
-                }                    
-            }
-            .explore-banner {
-                .title {
-                    height: 50px;
-                    line-height: 50px;
-                    font-weight: 500;
-                    color: #404040;
-                    text-align: left;
-                }
-                .banner-box {
-                    position: relative;
-                    width: 100%;
-                    height: 129px;
-                    border-radius: 5px;
-                    overflow: hidden;
-                    
-                    .explore-banner-swiper {
-                        height: 129px;
-                        border-radius: 5px;
-                        
-                    }
+            
+        }
+    }
+}
+.explore {
+    .top {
+        justify-content: space-between;
+        padding-right: 8px;
+        .title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #353535;
+        }
+        .view-all {
+            font-size: 13px;
+            font-weight: 400;
+            color: #888;
+            cursor: pointer;
+        }
+    }
+    ul {
+        margin-top: 12px;
+        li {
+            position: relative;
+            justify-content: space-between;
+            width: 171px;
+            height: 56px;
+            padding: 0 13px 0 10px;
+            margin-right: 9px;
+            vertical-align: top;
+            background: #f6f7fa;
+            border-radius: 5px;
+            box-sizing: border-box;
+            cursor: pointer;            
+        }
+    }
+}
+.lecture-info {
+    height: 32px;
+    .name {
+        width: 112px;
+        line-height: 18px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #353535;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        transition: color 0.2s ease;
+    }
+    .desc {
+        margin-top: -3px;
+        margin-left: -11px;
+        font-size: 13px;
+        font-weight: 400;
+        color: #888;
+        transform: scale(0.8);
+    }
+}
+.lecture-img {
+    position: relative;
+    z-index: 10;
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+.my-course {
+    display: flex;
+    flex: 0 0 110px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    .course-btn {
+        margin-right: 12px;
+        width: 120px;
+    }                    
+}
+.explore-banner {
+    .title {
+        height: 50px;
+        line-height: 50px;
+        font-weight: 500;
+        color: #404040;
+        text-align: left;
+    }
+    .banner-box {
+        position: relative;
+        width: 100%;
+        height: 129px;
+        border-radius: 5px;
+        overflow: hidden;
+        
+        .explore-banner-swiper {
+            height: 129px;
+            border-radius: 5px;
+            
+        }
 
-                    .link-box {
-                        display: block;
-                        width: 305px;
-                        height: 100%;
-                        position: relative;
-                        overflow: hidden;
-                        cursor: pointer;
+        .link-box {
+            display: block;
+            width: 305px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
 
-                        img {
-                            width: 100%;
-                            position: relative;
-                        }
-                    }
-                }
-                .live-box {
-                    height: auto;
-                    .stitle {
-                        color: #404040;
-                        font-weight: 400;
-                        font-size: 14px;
-                        text-align: left;
-                        margin-top: 8px;
-                        padding-left: 8px;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                    }
-                    .time {
-                        color: #888;
-                        font-size: 13px;
-                        text-align: left;
-                        padding-left: 8px;
-                    }
-                }
+            img {
+                width: 100%;
+                position: relative;
             }
-            .attention-us {
-                margin-top: 45px;
-                .attention-box {
-                    height: auto;
-                    box-sizing: border-box;
-                    padding: 17px 0px 20px;
-                    background-size: 100%;
-                    background: #f8f9fd;
-                    border-radius: 5px;
-                    .service-box {
-                        justify-content: center;
-                        padding: 0 30px;
-                        .qrcode {
-                            width: 78px;
-                            height: 78px;
-                            margin-right: 3px;
-                            img {
-                                width: 100%;
-                                height: 100%;
-                            }
-                        }
-                        .service-info {
-                            flex: 1;
-                            .tip {
-                                font-size: 14px;
-                                font-weight: 500;
-                                color: #404040;
-                                padding-left: 5px;
-                                position: relative;
-                                top: -8px;
-                            }
-                            .content {
-                                display: flex;
-                                flex-wrap: wrap;
-                                justify-content: space-between;
-                                position: relative;
-                                top: -5px;
-                                span {
-                                    flex: 0 0 50%;
-                                    margin-top: 4px;
-                                    color: #888;
-                                    font-weight: 400;
-                                    font-size: 12px;
-                                    line-height: 1;
-                                }
-                            }
-                        }
-                        
-                    }
-                    .more-box {
-                        margin-top: 15px;
-                        .tip {
-                            font-size: 13px;
-                            color: #404040;
-                            font-weight: 500;
-                            padding-left: 30px;
-                        }
-                        .more-info {
-                            justify-content: space-around;
-                            padding: 15px 22px 0;
-                            a {
-                                flex: 1;
-                                text-align: center;
-                                img {
-                                    width: 70%;
-                                    border-radius: 100%;
-                                }
-                                span {
-                                    display: block;
-                                    color: #888;
-                                    font-size: 12px;
-                                    font-weight: 400;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        }
+    }
+    .live-box {
+        height: auto;
+        .stitle {
+            color: #404040;
+            font-weight: 400;
+            font-size: 14px;
+            text-align: left;
+            margin-top: 8px;
+            padding-left: 8px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .time {
+            color: #888;
+            font-size: 13px;
+            text-align: left;
+            padding-left: 8px;
+        }
+    }
+}
+.attention-us {
+    margin-top: 45px;
+    .attention-box {
+        height: auto;
+        box-sizing: border-box;
+        padding: 17px 0px 20px;
+        background-size: 100%;
+        background: #f8f9fd;
+        border-radius: 5px;
+        
+    }
+}
+.service-box {
+    justify-content: center;
+    padding: 0 30px;
+    .qrcode {
+        width: 78px;
+        height: 78px;
+        margin-right: 3px;
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+.service-info {
+    flex: 1;
+    .tip {
+        font-size: 14px;
+        font-weight: 500;
+        color: #404040;
+        padding-left: 5px;
+        position: relative;
+        top: -8px;
+    }
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        position: relative;
+        top: -5px;
+        span {
+            flex: 0 0 50%;
+            margin-top: 4px;
+            color: #888;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 1;
+        }
+    }
+}
+.more-box {
+    margin-top: 15px;
+    .tip {
+        font-size: 13px;
+        color: #404040;
+        font-weight: 500;
+        padding-left: 30px;
+    }
+    
+}
+.more-info {
+    justify-content: space-around;
+    padding: 15px 22px 0;
+    a {
+        flex: 1;
+        text-align: center;
+        img {
+            width: 70%;
+            border-radius: 100%;
+        }
+        span {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            font-weight: 400;
         }
     }
 }

@@ -69,34 +69,7 @@ export default {
             background-position: center;
             background-size: contain;
         }
-        .info {
-            position: relative;
-            flex: 1;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            .menu {
-                opacity: 1;
-                transition: opacity .3s ease-out;
-                white-space: nowrap;
-
-                a {
-                    font-size: 16px;
-                    position: relative;
-                    padding: 8px 12px;
-                    font-weight: 400;
-                    transition: color .2s ease;
-                    white-space: nowrap;
-                }
-                a:link, a:visited {
-                    color: #353535;
-                }
-                a.on {
-                    color: #fa8919;
-                }
-            }
-        }
+        
     }
 }
 .common-header.fixed {
@@ -105,5 +78,33 @@ export default {
     left: 0;
     width: 100%;
     z-index: 10000;
+}
+.info {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    .menu {
+        opacity: 1;
+        transition: opacity .3s ease-out;
+        white-space: nowrap;
+
+        a {
+            font-size: 16px;
+            position: relative;
+            padding: 8px 12px;
+            font-weight: 400;
+            transition: color .2s ease;
+            white-space: nowrap;
+        }
+        a:link, a:visited {
+            color: #353535;
+        }
+        a.on {
+            color: #fa8919;
+        }
+    }
 }
 </style>
