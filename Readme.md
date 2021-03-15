@@ -7,7 +7,12 @@ Vue3实现极客时间官网首页
 
 #### 软件架构
 
-Vue3、Vue-Router
+Vue3、Vue-Router、Vite
+
+
+#### 兼容性注意
+
+Vite 需要 Node.js 版本 >= 12.0.0。
 
 
 #### 创建项目和安装依赖
@@ -21,6 +26,7 @@ npm i vant@next -S
 npm install axios --save
 
 npm install qs --save
+
 
 #### 屏幕截图
 
