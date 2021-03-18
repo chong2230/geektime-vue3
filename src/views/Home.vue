@@ -30,11 +30,12 @@
                     <ExploreBanner :exploreBanner="exploreBanner"></ExploreBanner>
                     <LectureAd :lectureAd="lectureAd"></LectureAd>                    
                     <IndexLive :indexLive="indexLive"></IndexLive>
-                    <Mall :mall="mall"></Mall>                    
+                    <AdMall :mall="mall"></AdMall>                    
                     <AttentionUs></AttentionUs>
                 </div>
             </div>
-        </div>                
+        </div>   
+        <AdBottom :adBottom="adBottom"></AdBottom>             
     </div>
 </template>
 <script>
@@ -45,9 +46,11 @@ import Product from '@/components/Product.vue';
 import ExploreBanner from '@/components/ExploreBanner.vue';
 import LectureAd from '@/components/LectureAd.vue';
 import IndexLive from '@/components/IndexLive.vue';
-import Mall from '@/components/Mall.vue';
+import AdMall from '@/components/AdMall.vue';
 import AttentionUs from '@/components/AttentionUs.vue';
+import AdBottom from '@/components/AdBottom.vue';
 import Mock from '@/mock/index.js';
+// import skus from '@/mock/labelSkus.js';
 
 export default {
     components: {
@@ -56,8 +59,9 @@ export default {
         ExploreBanner,
         LectureAd,
         IndexLive,
-        Mall,
-        AttentionUs
+        AdMall,
+        AttentionUs,
+        AdBottom
     },
     setup() {
         const { ctx } = getCurrentInstance();
@@ -73,20 +77,24 @@ export default {
             adBottom: {},       // 底栏
             lecture: {},
             productInfos: [],
-            productArticles: {}
+            productArticles: {},
+            skusData: {},
+            order: 3,            // 排序 1：综合 2：最新上架 3：订阅数 4：价格 5：活动
+            asc: 1               // 1：升序 0：降序 用于价格排序
         });
+        let levelSkus, newSkus, subSkus, priceSkus, spuSkus;
         
         onMounted(async () => {
-            loadData();                        
+            loadData();                  
         })
 
         function loadData() {
             getMenus();
             getExploreAll();        
+            getLabelSkus();
             getLectureList();
-            getIndexLive();
-            getProductInfos();
-        }
+            getIndexLive();            
+        }        
 
         async function getMenus() {
             const menus = await ctx.$api.getMenuData({v: 26921181});
@@ -108,8 +116,35 @@ export default {
                     else if(item.block_name == 'cm_web_lecture_ad001') state.lectureAd = item;
                     else if(item.block_name == 'hot_live') state.hotLive = item;
                     else if(item.block_name == 'cm_web_lecture_ad002') state.mall = item;
-                    else if(item.block_name == 'ad_bottom') state.adBottom = item;
+                    else if(item.block_name == 'ad_bottom') {state.adBottom = item.list[0];}
                 }
+            }
+        }
+
+        // TODO: save skus data, if exist, don't request again
+        async function getLabelSkus() {
+            const res = await ctx.$api.getLabelSkus({label_id: 0, type: 0});
+            if (res.code == 0) {
+                state.skusData = res.data;
+                switch (state.order) {
+                    case 1:
+                        ctx.skus = getLevelSkus(res.data); // 默认按综合排序
+                        break;
+                    case 2:
+                        
+                        break;
+                    case 3:
+                        ctx.skus = getSubSkus(res.data);    // 按订阅数排序
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;    
+                    default:
+                        break;            
+                }
+                
+                getProductInfos();
             }
         }
         
@@ -123,14 +158,14 @@ export default {
         async function getIndexLive() {
             const res = await ctx.$api.getIndexLive({});
             if (res.code == 0) {
-                state.indexLive = res.data;
+                state.indexLive = res.data;                
             }
         }
 
         async function getProductInfos() {
-            // TODO: where does ids's data come from?
+            let ids = getSkuIds();
             const params = {
-                ids: [100015201, 100052401, 100073301, 100073201, 100003101, 100002201, 100001901, 100007001, 100003901, 100006201],
+                ids: ids,//[100015201, 100052401, 100073301, 100073201, 100003101, 100002201, 100001901, 100007001, 100003901, 100006201],
                 with_first_articles: true
 
             }
@@ -145,7 +180,38 @@ export default {
                 state.productInfos = data.infos;
                 state.productArticles = articles;
             }
-        }      
+        }
+
+        function getSkuIds() {
+            // TODO: 按分页获取数据
+            let arr = ctx.skus.slice(0, 10);
+            let ids = [];
+            for (let item of arr) {
+                ids.push(item.column_sku);
+            }
+            return ids;
+        }
+        
+        // all the top_level's value is zero???
+        function getLevelSkus(skus) {
+            if (levelSkus) return levelSkus;
+            let skuList = [...skus.list];
+            function levelSort(a, b) {
+                return a.top_level < b.top_level ? 1 : -1;
+            }
+            levelSkus = skuList.sort(levelSort);
+            return levelSkus;
+        }
+
+        function getSubSkus(skus) {
+            if (subSkus) return subSkus;
+            let skuList = [...skus.list];
+            function subSort(a, b) {
+                return a.sub_count < b.sub_count ? 1 : -1;
+            }
+            subSkus = skuList.sort(subSort);
+            return subSkus;
+        }
 
         onUpdated(() => {
             console.log('onUpdated')

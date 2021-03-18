@@ -10,5 +10,6 @@ api.getHotWords = params => http.post('/serv/v3/search/hot_words', params);
 api.getLectureList = params => http.post('/serv/v3/lecture/list', params);
 api.getIndexLive = params => http.post('/serv/live/get_index_live', params);
 api.getProductInfos = params => http.post('/serv/v3/product/infos', params);
+api.getLabelSkus = params => http.post('/serv/v1/column/label_skus', params);
 
 export default api;
