@@ -19,6 +19,19 @@
                     </ul>
                 </div>
                 <div class="products">
+                    <div class="products-info row">
+                        <div class="conditions row">
+                            <a :class="{active: index == order - 1}" href="javascript:void(0)" v-for="(item, index) in conditions" :key="index" @click="changeSku(index)">{{item}}</a>
+                            <!-- <a href="javascript:void(0)">最新上架</a>
+                            <a href="javascript:void(0)">订阅数</a>
+                            <a href="javascript:void(0)">
+                                价格
+                                <span></span>
+                            </a>
+                            <a href="javascript:void(0)">活动</a> -->
+                        </div>
+                        <span class="count">184个课程</span>
+                    </div>
                     <Product :productInfos="productInfos" :productArticles="productArticles"></Product>
                 </div>
             </div>
@@ -35,12 +48,13 @@
                 </div>
             </div>
         </div>   
-        <AdBottom :adBottom="adBottom"></AdBottom>             
+        <AdBottom :adBottom="adBottom"></AdBottom>    
+        <ad-dialog ref="adDialog" :src="ad.image_url" :link="ad.target_url"></ad-dialog>         
     </div>
 </template>
 <script>
-import { reactive, onMounted, onUpdated, onUnmounted } from 'vue'
-import { getCurrentInstance } from '@vue/runtime-core'
+import { reactive, ref, onMounted, onUpdated, onUnmounted } from 'vue'
+import { getCurrentInstance, toRefs } from '@vue/runtime-core'
 import Header from '@/components/Header.vue';
 import Product from '@/components/Product.vue';
 import ExploreBanner from '@/components/ExploreBanner.vue';
@@ -50,6 +64,7 @@ import AdMall from '@/components/AdMall.vue';
 import AttentionUs from '@/components/AttentionUs.vue';
 import AdBottom from '@/components/AdBottom.vue';
 import Mock from '@/mock/index.js';
+import AdDialog from '../components/AdDialog.vue';
 // import skus from '@/mock/labelSkus.js';
 
 export default {
@@ -61,7 +76,8 @@ export default {
         IndexLive,
         AdMall,
         AttentionUs,
-        AdBottom
+        AdBottom,
+        AdDialog
     },
     setup() {
         const { ctx } = getCurrentInstance();
@@ -79,13 +95,15 @@ export default {
             productInfos: [],
             productArticles: {},
             skusData: {},
-            order: 3,            // 排序 1：综合 2：最新上架 3：订阅数 4：价格 5：活动
-            asc: 1               // 1：升序 0：降序 用于价格排序
+            conditions: ['综合', '最新上架', '订阅数', '价格', '活动'],
+            order: 1,            // 排序 1：综合 2：最新上架 3：订阅数 4：价格 5：活动
+            asc: 1,               // 1：升序 0：降序 用于价格排序
+            ad: {},              // 广告弹窗
         });
-        let levelSkus, newSkus, subSkus, priceSkus, spuSkus;
+        let levelSkus, newsSkus, subSkus, priceSkus, spuSkus;
         
         onMounted(async () => {
-            loadData();                  
+            loadData();     
         })
 
         function loadData() {
@@ -93,11 +111,12 @@ export default {
             getExploreAll();        
             getLabelSkus();
             getLectureList();
-            getIndexLive();            
+            getIndexLive(); 
+            getPcInterstitial();
         }        
 
         async function getMenus() {
-            const menus = await ctx.$api.getMenuData({v: 26921181});
+            const menus = await ctx.$api.getMenuData({v: 26939623});
             state.menus = menus;
         }
 
@@ -126,26 +145,31 @@ export default {
             const res = await ctx.$api.getLabelSkus({label_id: 0, type: 0});
             if (res.code == 0) {
                 state.skusData = res.data;
+                getSkusByOrder();                
+                getProductInfos();
+            }
+        }
+
+        function getSkusByOrder() {
                 switch (state.order) {
                     case 1:
-                        ctx.skus = getLevelSkus(res.data); // 默认按综合排序
+                        ctx.skus = getLevelSkus(state.skusData); // 默认按综合排序
                         break;
                     case 2:
-                        
+                        ctx.skus = getNewsSkus(state.skusData); // 默认按综合排序
                         break;
                     case 3:
-                        ctx.skus = getSubSkus(res.data);    // 按订阅数排序
+                        ctx.skus = getSubSkus(state.skusData);    // 按订阅数排序
                         break;
                     case 4:
+                        ctx.skus = getPriceSkus(state.skusData);    // 按价格排序
                         break;
                     case 5:
+                        ctx.skus = getSpuSkus(state.skusData);    // 按活动排序
                         break;    
                     default:
                         break;            
                 }
-                
-                getProductInfos();
-            }
         }
         
         async function getLectureList() {
@@ -182,6 +206,20 @@ export default {
             }
         }
 
+        async function getPcInterstitial() {
+            const res = await ctx.$api.getPcInterstitial({v: 26939623});
+            const ads = res.default || [];
+            let time = parseInt(new Date().getTime()/1000);
+            let ad = {};
+            for (let item of ads) {
+                if (time >= item.start_time_timestamp && time <= item.end_time_timestamp) {
+                    ad = item;
+                    break;
+                }
+            }
+            state.ad = ad;
+        }
+
         function getSkuIds() {
             // TODO: 按分页获取数据
             let arr = ctx.skus.slice(0, 10);
@@ -203,6 +241,37 @@ export default {
             return levelSkus;
         }
 
+        function getNewsSkus(skus) {
+            if (newsSkus) return newsSkus;
+            let skuList = [...skus.list];
+            function newsSort(a, b) {
+                return a.column_ctime < b.column_ctime ? 1 : -1;
+            }
+            newsSkus = skuList.sort(newsSort);
+            return newsSkus;
+        }
+
+        function getPriceSkus(skus) {
+            // if (priceSkus) return priceSkus;
+            let skuList = [...skus.list];
+            function priceSort(a, b) {
+                if (state.asc) return a.column_price < b.column_price ? -1 : 1;
+                else return a.column_price < b.column_price ? 1 : -1;
+            }
+            priceSkus = skuList.sort(priceSort);
+            return priceSkus;
+        }
+
+        function getSpuSkus(skus) {
+            if (spuSkus) return spuSkus;
+            let skuList = [...skus.list];
+            function spuSort(a, b) {
+                return a.column_sku < b.column_sku ? 1 : -1;
+            }
+            spuSkus = skuList.sort(spuSort);
+            return spuSkus;
+        }
+
         function getSubSkus(skus) {
             if (subSkus) return subSkus;
             let skuList = [...skus.list];
@@ -213,6 +282,13 @@ export default {
             return subSkus;
         }
 
+        const changeSku = (index) => {
+            if (state.order == 4 && index == 3) state.asc = 1 - state.asc;  // 重复点击价格，切换升序和降序
+            state.order = index + 1;
+            getSkusByOrder();                
+            getProductInfos();
+        }
+
         onUpdated(() => {
             console.log('onUpdated')
         })
@@ -221,7 +297,10 @@ export default {
             console.log('onUnmounted')
         })
         
-        return state;
+        return {
+            ...toRefs(state),
+            changeSku
+        };
     },
 }
 </script>
@@ -361,6 +440,31 @@ export default {
         width: 120px;
     }                    
 }
+.products-info {
+    justify-content: space-between;
+    height: 50px;
+    border-bottom: 1px solid rgba(233,233,233,0.6);
+    .conditions {
+        display: flex;
+        a.active {
+            font-weight: 500;
+            color: #666565;
 
+        }
+        a {
+            color: #888;
+            padding-right: 20px;
+            font-size: 13px;
+            font-weight: 400;
+            margin-right: 20px;
+            position: relative;
+        }
+    }
+    .count {
+        font-size: 12px;
+        color: #888;
+        font-weight: 400;
+    }
+}
 
 </style>

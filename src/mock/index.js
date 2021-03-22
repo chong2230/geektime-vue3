@@ -3394,6 +3394,66 @@ const Mock = {
             ],
             "labels": null
         },
+    },
+    '/static/time/interstitial/pc_interstitial.json': {
+        "default":[
+            {
+                "id":947,
+                "display_on":"default",
+                "display_rule":1,
+                "start_time_timestamp":1616306400,
+                "end_time_timestamp":1616342340,
+                "start_time":"2021-03-21 14:00:00",
+                "end_time":"2021-03-21 23:59:00",
+                "target_url":"https://time.geekbang.org/article/353846?utm_term=pc_interstitial_947",
+                "image_url":"https://static001.geekbang.org/resource/image/8d/d4/8d65e19b6aa2d84132aa1452d4b14fd4.png"
+            },
+            {
+                "id":948,
+                "display_on":"default",
+                "display_rule":1,
+                "start_time_timestamp":1616392800,
+                "end_time_timestamp":1616403540,
+                "start_time":"2021-03-22 14:00:00",
+                "end_time":"2021-03-22 16:59:00",
+                "target_url":"https://time.geekbang.org/column/intro/166?utm_source=wechat-social&utm_medium=liaoliaojiagou&utm_campaign=100025201&utm_content=shequn&utm_term=pc_interstitial_948",
+                "image_url":"https://static001.geekbang.org/resource/image/e2/62/e2b7e11a3f828b9ec60bc0f2bc9b9e62.png"
+            },
+            {
+                "id":949,
+                "display_on":"default",
+                "display_rule":1,
+                "start_time_timestamp":1616342400,
+                "end_time_timestamp":1616392740,
+                "start_time":"2021-03-22 00:00:00",
+                "end_time":"2021-03-22 13:59:00",
+                "target_url":"https://time.geekbang.org/column/intro/400?utm_source=geektime-web&utm_medium=jiangtang&utm_campaign=100073401&utm_content=popups-a&utm_term=pc_interstitial_949",
+                "image_url":"https://static001.geekbang.org/resource/image/ca/57/ca714def58dc80190b4b326b03bdef57.png"
+            },
+            {
+                "id":950,
+                "display_on":"default",
+                "display_rule":1,
+                "start_time_timestamp":1616403600,
+                "end_time_timestamp":1616428740,
+                "start_time":"2021-03-22 17:00:00",
+                "end_time":"2021-03-22 23:59:00",
+                "target_url":"https://time.geekbang.org/column/intro/402?utm_source=geektime-web&utm_medium=summary&utm_campaign=100074001&utm_content=popups&utm_term=pc_interstitial_950",
+                "image_url":"https://static001.geekbang.org/resource/image/5e/c8/5ed9251f0c71fae9afc2274426f14bc8.png"
+            }
+        ],
+        "u_algorithm":[
+    
+        ],
+        "u_python":[
+    
+        ],
+        "u_front_end":[
+    
+        ],
+        "es":[
+    
+        ]
     }
 };
 
