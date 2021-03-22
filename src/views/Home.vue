@@ -30,7 +30,7 @@
                             </a>
                             <a href="javascript:void(0)">活动</a> -->
                         </div>
-                        <span class="count">184个课程</span>
+                        <span class="count" v-if="skusData.page">{{skusData.page.count}}个课程</span>
                     </div>
                     <Product :productInfos="productInfos" :productArticles="productArticles"></Product>
                 </div>
@@ -65,6 +65,7 @@ import AttentionUs from '@/components/AttentionUs.vue';
 import AdBottom from '@/components/AdBottom.vue';
 import Mock from '@/mock/index.js';
 import AdDialog from '../components/AdDialog.vue';
+import { getSkuIds, getSkusByOrder } from './home/skus.js'
 // import skus from '@/mock/labelSkus.js';
 
 export default {
@@ -100,7 +101,8 @@ export default {
             asc: 1,               // 1：升序 0：降序 用于价格排序
             ad: {},              // 广告弹窗
         });
-        let levelSkus, newsSkus, subSkus, priceSkus, spuSkus;
+        // let levelSkus, newsSkus, subSkus, priceAscSkus, priceDescSkus, spuSkus;
+        let skusObj = {};   // 缓存skus
         
         onMounted(async () => {
             loadData();     
@@ -145,32 +147,46 @@ export default {
             const res = await ctx.$api.getLabelSkus({label_id: 0, type: 0});
             if (res.code == 0) {
                 state.skusData = res.data;
-                getSkusByOrder();                
+                if (!skusObj[state.order]) skusObj[state.order] = getSkusByOrder(state.skusData, state.order, state.asc);
+                ctx.skus = skusObj[state.order];                
                 getProductInfos();
             }
         }
 
+        /*
+        // 按排序获取课程，并进行缓存
         function getSkusByOrder() {
-                switch (state.order) {
-                    case 1:
-                        ctx.skus = getLevelSkus(state.skusData); // 默认按综合排序
-                        break;
-                    case 2:
-                        ctx.skus = getNewsSkus(state.skusData); // 默认按综合排序
-                        break;
-                    case 3:
-                        ctx.skus = getSubSkus(state.skusData);    // 按订阅数排序
-                        break;
-                    case 4:
-                        ctx.skus = getPriceSkus(state.skusData);    // 按价格排序
-                        break;
-                    case 5:
-                        ctx.skus = getSpuSkus(state.skusData);    // 按活动排序
-                        break;    
-                    default:
-                        break;            
-                }
+            switch (state.order) {
+                case 1:
+                    if (!levelSkus) levelSkus = getLevelSkus(state.skusData); // 默认按综合排序
+                    ctx.skus = levelSkus;
+                    break;
+                case 2:
+                    if (!newsSkus) newsSkus = getNewsSkus(state.skusData); // 默认按综合排序
+                    ctx.skus = newsSkus;
+                    break;
+                case 3:
+                    if (!subSkus) subSkus = getSubSkus(state.skusData);    // 按订阅数排序
+                    ctx.skus = subSkus;
+                    break;
+                case 4:
+                    if (state.asc) {
+                        if (!priceAscSkus) priceAscSkus = getPriceSkus(state.skusData, state.asc);    // 按价格升序排序
+                        ctx.skus = priceAscSkus;
+                    } else {
+                        if (!priceDescSkus) priceDescSkus = getPriceSkus(state.skusData, state.asc);    // 按价格降序排序
+                        ctx.skus = priceDescSkus;
+                    }
+                    break;
+                case 5:
+                    if (!spuSkus) spuSkus = getSpuSkus(state.skusData);    // 按活动排序
+                    ctx.skus = spuSkus;
+                    break;    
+                default:
+                    break;            
+            }
         }
+        */
         
         async function getLectureList() {
             const res = await ctx.$api.getLectureList({label_id: 0, type: 0});
@@ -187,7 +203,7 @@ export default {
         }
 
         async function getProductInfos() {
-            let ids = getSkuIds();
+            let ids = getSkuIds(ctx.skus);
             const params = {
                 ids: ids,//[100015201, 100052401, 100073301, 100073201, 100003101, 100002201, 100001901, 100007001, 100003901, 100006201],
                 with_first_articles: true
@@ -220,72 +236,16 @@ export default {
             state.ad = ad;
         }
 
-        function getSkuIds() {
-            // TODO: 按分页获取数据
-            let arr = ctx.skus.slice(0, 10);
-            let ids = [];
-            for (let item of arr) {
-                ids.push(item.column_sku);
-            }
-            return ids;
-        }
-        
-        // all the top_level's value is zero???
-        function getLevelSkus(skus) {
-            if (levelSkus) return levelSkus;
-            let skuList = [...skus.list];
-            function levelSort(a, b) {
-                return a.top_level < b.top_level ? 1 : -1;
-            }
-            levelSkus = skuList.sort(levelSort);
-            return levelSkus;
-        }
-
-        function getNewsSkus(skus) {
-            if (newsSkus) return newsSkus;
-            let skuList = [...skus.list];
-            function newsSort(a, b) {
-                return a.column_ctime < b.column_ctime ? 1 : -1;
-            }
-            newsSkus = skuList.sort(newsSort);
-            return newsSkus;
-        }
-
-        function getPriceSkus(skus) {
-            // if (priceSkus) return priceSkus;
-            let skuList = [...skus.list];
-            function priceSort(a, b) {
-                if (state.asc) return a.column_price < b.column_price ? -1 : 1;
-                else return a.column_price < b.column_price ? 1 : -1;
-            }
-            priceSkus = skuList.sort(priceSort);
-            return priceSkus;
-        }
-
-        function getSpuSkus(skus) {
-            if (spuSkus) return spuSkus;
-            let skuList = [...skus.list];
-            function spuSort(a, b) {
-                return a.column_sku < b.column_sku ? 1 : -1;
-            }
-            spuSkus = skuList.sort(spuSort);
-            return spuSkus;
-        }
-
-        function getSubSkus(skus) {
-            if (subSkus) return subSkus;
-            let skuList = [...skus.list];
-            function subSort(a, b) {
-                return a.sub_count < b.sub_count ? 1 : -1;
-            }
-            subSkus = skuList.sort(subSort);
-            return subSkus;
-        }
-
         const changeSku = (index) => {
             if (state.order == 4 && index == 3) state.asc = 1 - state.asc;  // 重复点击价格，切换升序和降序
             state.order = index + 1;
-            getSkusByOrder();                
+            let key = state.order;
+            if (key == 4) {
+                // 价格分为升序和降序
+                key += '-' + state.asc;
+            }
+            if (!skusObj[key]) skusObj[key] = getSkusByOrder(state.skusData, state.order, state.asc);
+            ctx.skus = skusObj[key];
             getProductInfos();
         }
 
