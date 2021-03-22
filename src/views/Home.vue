@@ -21,14 +21,14 @@
                 <div class="products">
                     <div class="products-info row">
                         <div class="conditions row">
-                            <a :class="{active: index == order - 1}" href="javascript:void(0)" v-for="(item, index) in conditions" :key="index" @click="changeSku(index)">{{item}}</a>
-                            <!-- <a href="javascript:void(0)">最新上架</a>
-                            <a href="javascript:void(0)">订阅数</a>
-                            <a href="javascript:void(0)">
-                                价格
-                                <span></span>
+                            <a class="row" :class="{active: index == order - 1}" href="javascript:void(0)" 
+                                v-for="(item, index) in conditions" :key="index" @click="changeSku(index)">
+                                {{item}}
+                                <span class="column" v-if="index == 3">
+                                    <i class="up" :class="{active: order==4 && asc==1}"></i>
+                                    <i class="down" :class="{active: order==4 && asc==0}"></i>
+                                </span>
                             </a>
-                            <a href="javascript:void(0)">活动</a> -->
                         </div>
                         <span class="count" v-if="skusData.page">{{skusData.page.count}}个课程</span>
                     </div>
@@ -66,6 +66,7 @@ import AdBottom from '@/components/AdBottom.vue';
 import Mock from '@/mock/index.js';
 import AdDialog from '../components/AdDialog.vue';
 import { getSkuIds, getSkusByOrder } from './home/skus.js'
+import { debounce } from '@/common/util.js';
 // import skus from '@/mock/labelSkus.js';
 
 export default {
@@ -101,8 +102,21 @@ export default {
             asc: 1,               // 1：升序 0：降序 用于价格排序
             ad: {},              // 广告弹窗
         });
-        // let levelSkus, newsSkus, subSkus, priceAscSkus, priceDescSkus, spuSkus;
         let skusObj = {};   // 缓存skus
+        let page = 1, pageSize = 10;
+
+        // 监听滚动，翻页
+        window.onscroll = debounce(function() {
+            let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            console.log(scrollTop);
+            let windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+            let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            if (scrollTop + windowHeight >= scrollHeight - 40) {
+                page++;
+                getProductInfos();
+            }
+
+        });
         
         onMounted(async () => {
             loadData();     
@@ -152,41 +166,6 @@ export default {
                 getProductInfos();
             }
         }
-
-        /*
-        // 按排序获取课程，并进行缓存
-        function getSkusByOrder() {
-            switch (state.order) {
-                case 1:
-                    if (!levelSkus) levelSkus = getLevelSkus(state.skusData); // 默认按综合排序
-                    ctx.skus = levelSkus;
-                    break;
-                case 2:
-                    if (!newsSkus) newsSkus = getNewsSkus(state.skusData); // 默认按综合排序
-                    ctx.skus = newsSkus;
-                    break;
-                case 3:
-                    if (!subSkus) subSkus = getSubSkus(state.skusData);    // 按订阅数排序
-                    ctx.skus = subSkus;
-                    break;
-                case 4:
-                    if (state.asc) {
-                        if (!priceAscSkus) priceAscSkus = getPriceSkus(state.skusData, state.asc);    // 按价格升序排序
-                        ctx.skus = priceAscSkus;
-                    } else {
-                        if (!priceDescSkus) priceDescSkus = getPriceSkus(state.skusData, state.asc);    // 按价格降序排序
-                        ctx.skus = priceDescSkus;
-                    }
-                    break;
-                case 5:
-                    if (!spuSkus) spuSkus = getSpuSkus(state.skusData);    // 按活动排序
-                    ctx.skus = spuSkus;
-                    break;    
-                default:
-                    break;            
-            }
-        }
-        */
         
         async function getLectureList() {
             const res = await ctx.$api.getLectureList({label_id: 0, type: 0});
@@ -203,7 +182,7 @@ export default {
         }
 
         async function getProductInfos() {
-            let ids = getSkuIds(ctx.skus);
+            let ids = getSkuIds(ctx.skus, page, pageSize);
             const params = {
                 ids: ids,//[100015201, 100052401, 100073301, 100073201, 100003101, 100002201, 100001901, 100007001, 100003901, 100006201],
                 with_first_articles: true
@@ -217,8 +196,8 @@ export default {
                     articles[article.pid] = articles[article.pid] || [];
                     articles[article.pid].push(article);
                 }
-                state.productInfos = data.infos;
-                state.productArticles = articles;
+                state.productInfos = state.productInfos.concat(data.infos);
+                state.productArticles = Object.assign({}, state.productArticles, articles);
             }
         }
 
@@ -238,6 +217,8 @@ export default {
 
         const changeSku = (index) => {
             if (state.order == 4 && index == 3) state.asc = 1 - state.asc;  // 重复点击价格，切换升序和降序
+            else if (state.order - 1 == index) return;
+            else state.asc = 1;
             state.order = index + 1;
             let key = state.order;
             if (key == 4) {
@@ -246,6 +227,9 @@ export default {
             }
             if (!skusObj[key]) skusObj[key] = getSkusByOrder(state.skusData, state.order, state.asc);
             ctx.skus = skusObj[key];
+            page = 1;            
+            state.productInfos = [];
+            state.productArticles = {};
             getProductInfos();
         }
 
@@ -418,6 +402,32 @@ export default {
             font-weight: 400;
             margin-right: 20px;
             position: relative;
+            span {
+                width: 8px;
+                height: 13px;
+                margin-left: 5px;
+            }
+            .up {
+                border-bottom: 4px solid #b2b2b2;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                width: 0;
+                height: 0;
+                margin-bottom: 2px;
+                &.active {
+                    border-bottom: 4px solid #fa8919;
+                }
+            }
+            .down {
+                border-top: 4px solid #b2b2b2;
+                border-left: 4px solid transparent;
+                border-right: 4px solid transparent;
+                width: 0;
+                height: 0;
+                &.active {
+                    border-top: 4px solid #fa8919;
+                }
+            }
         }
     }
     .count {

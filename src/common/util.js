@@ -64,3 +64,34 @@ export const getLink = (link, name='url') => {
 	}            
 	return ''
 }
+
+/**
+ * 防抖
+ * @param {*} fn 需要防抖的函数
+ * @param {*} delay 毫秒，防抖间隔时间
+ */
+export const debounce = (fn, delay = 500) => {
+	let timer = null;	
+	return function() {
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(fn, delay);
+	}
+}
+
+let _running = false;
+/**
+ * 节流
+ * @param {*} fn 执行函数
+ * @param {*} delay 毫秒，延时时间
+ * @returns 
+ */
+export const throttle = (fn, delay = 500) => {
+	if (_running) return;
+	_running = true;
+	fn();
+	setTimeout(() => {
+		_running = false;
+	}, delay);
+}
