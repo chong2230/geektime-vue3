@@ -1,6 +1,6 @@
 <template>
-    <div class="ad-dialog" :class="show ? 'show' : 'hide'">
-        <div class="ad" v-if="src">
+    <div class="ad-dialog" :class="show ? 'show' : 'hide'" v-if="src">
+        <div class="ad">
             <img class="img" width="auto" height="auto" :src="src" alt="" 
                 @click="goLink" />
             <div class="close-btn" @click="close">

@@ -212,6 +212,8 @@ export default {
                     break;
                 }
             }
+            // 根据v获取json文件，v还不知道如何获取，取v=26939623的最后一条数据
+            if (JSON.stringify(ad) == '{}') ad = ads[ads.length - 1] || {};
             state.ad = ad;
         }
 
