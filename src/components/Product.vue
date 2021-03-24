@@ -1,5 +1,5 @@
 <template>
-    <div class="product row" v-for="item in productInfos" :key="item.id">
+    <div class="product row" v-for="item in productInfos" :key="item.id" @click="goColumn(item)">
         <div class="p-left">
             <a>
                 <img :src="item.cover.rectangle" />
@@ -16,7 +16,7 @@
             <div class="p-article">
                 <ul class="p-ul">
                     <li v-for="sitem in productArticles[item.id]" :key="sitem.id">
-                        <a :class="{free: sitem.could_preview}">
+                        <a :class="{free: sitem.could_preview}" href="javascript: void(0)" @click="goArticle(sitem)">
                             <span v-if="sitem.could_preview">免费</span>
                             {{sitem.title}}
                         </a>
@@ -43,6 +43,12 @@ export default {
         productArticles: Object
     },
     setup() {
+        const goColumn = (item) => {
+            window.open('https://time.geekbang.org/column/intro/' + item.id, '_blank');
+        }
+        const goArticle = (item) => {
+            window.open('https://time.geekbang.org/column/article/' + item.id, '_blank');
+        }
         const getSaleLabel = (price) => {
             let type = '';
             switch(price.sale_type) {
@@ -61,6 +67,8 @@ export default {
             return type + ' ¥' + price.sale/100;
         }
         return {
+            goColumn,
+            goArticle,
             getSaleLabel
         }
     },
@@ -68,6 +76,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .product {
+    cursor: pointer;
     justify-content: space-between;
     
     .p-right {
@@ -104,7 +113,7 @@ export default {
     }
 }
 .p-info {
-    cursor: point;
+    cursor: pointer;
     .title-sec {
         justify-content: space-between;
         padding-top: 3px;
@@ -178,7 +187,10 @@ export default {
         a.free {
             position: relative;
             padding-left: 30px;
-        }                         
+        }    
+        a:hover {
+            text-decoration: underline;
+        }                     
     }
     li:nth-child(2n-1) {
         padding-right: 20px;

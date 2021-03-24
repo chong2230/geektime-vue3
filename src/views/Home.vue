@@ -9,7 +9,7 @@
                         <div class="view-all">查看全部</div>
                     </div>
                     <ul class="row">
-                        <li class="row" v-for="item in lecturePath.list" :key="item.id">
+                        <li class="row" v-for="item in lecturePath.list" :key="item.id" @click="goLecture(item.redirect_param)">
                             <div class="lecture-info">
                                 <div class="name">{{item.name}}</div>
                                 <div class="desc">{{item.product_count}}门课程</div>
@@ -49,7 +49,7 @@
             </div>
         </div>   
         <AdBottom :adBottom="adBottom"></AdBottom>    
-        <ad-dialog ref="adDialog" :src="ad.image_url" :link="ad.target_url"></ad-dialog>         
+        <ad-dialog ref="adDialog" :src="ad.image_url" :link="ad.target_url"></ad-dialog>             
     </div>
 </template>
 <script>
@@ -66,7 +66,7 @@ import AdBottom from '@/components/AdBottom.vue';
 import Mock from '@/mock/index.js';
 import AdDialog from '../components/AdDialog.vue';
 import { getSkuIds, getSkusByOrder } from './home/skus.js'
-import { debounce } from '@/common/util.js';
+import { debounce, getLink } from '@/common/util.js';
 // import skus from '@/mock/labelSkus.js';
 
 export default {
@@ -108,7 +108,6 @@ export default {
         // 监听滚动，翻页
         window.onscroll = debounce(function() {
             let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            console.log(scrollTop);
             let windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
             let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
             if (scrollTop + windowHeight >= scrollHeight - 40) {
@@ -217,6 +216,10 @@ export default {
             state.ad = ad;
         }
 
+        const goLecture = (link) => {
+            window.open(getLink(link), '_blank');
+        }
+
         const changeSku = (index) => {
             if (state.order == 4 && index == 3) state.asc = 1 - state.asc;  // 重复点击价格，切换升序和降序
             else if (state.order - 1 == index) return;
@@ -245,6 +248,7 @@ export default {
         
         return {
             ...toRefs(state),
+            goLecture,
             changeSku
         };
     },
