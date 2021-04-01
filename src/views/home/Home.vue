@@ -18,6 +18,33 @@
                         </li>
                     </ul>
                 </div>
+                <div class="types-sec column" :class="isHover ? 'hover' : ''" @mouseover="enter(event)" @mouseout="leave(event)" v-if="labels.length > 0">
+                    <div class="type-item">
+                        <span>形式：</span>
+                        <div class="type-labels row">
+                            <a class="all label" :class="curType == 0 ? 'choose' : ''" href="javascript:void(0)" @click="chooseType(0)">全部</a>
+                            <a class="label" :class="curType == item.id ? 'choose' : ''" v-for="item in types" :key="item.id" 
+                                href="javascript:void(0)" @click="chooseType(item.id)">{{item.name}}</a>                            
+                        </div>
+                    </div>
+                    <div class="type-item row">
+                        <span>方向：</span>
+                        <div class="type-labels row">
+                            <a class="all label" :class="curDirection == 0 ? 'choose' : ''" href="javascript:void(0)" @click="chooseDirection(0)">全部</a>
+                            <!-- <div class="label" v-for="item in lectureTag.list" :key="item.id">{{item.title}}</div> -->
+                            <a class="label" :class="curDirection == item.lid ? 'choose' : ''" v-for="item in labels.filter((val)=> val.pid==0)" :key="item.lid" 
+                                href="javascript:void(0)" @click="chooseDirection(item.lid)">{{item.name}}</a>
+                        </div>
+                    </div>
+                    <div class="type-item row">
+                        <span>分类：</span>
+                        <div class="type-labels row">
+                            <a class="all label" :class="curCategory == 0 ? 'choose' : ''" href="javascript:void(0)" @click="chooseCategory(0)">全部</a>
+                            <a class="label" :class="curCategory == item.lid ? 'choose' : ''" v-for="item in labels.filter((val)=>{return val.pid!=0})" :key="item.lid" 
+                                href="javascript:void(0)" @click="chooseCategory(item.lid)">{{item.name}}</a>
+                        </div>
+                    </div>
+                </div>
                 <div class="products">
                     <div class="products-info row">
                         <div class="conditions row">
@@ -56,17 +83,18 @@
 import { reactive, ref, onMounted, onUpdated, onUnmounted } from 'vue'
 import { getCurrentInstance, toRefs } from '@vue/runtime-core'
 import Header from '@/components/Header.vue';
-import Product from '@/components/Product.vue';
-import ExploreBanner from '@/components/ExploreBanner.vue';
-import LectureAd from '@/components/LectureAd.vue';
-import IndexLive from '@/components/IndexLive.vue';
-import AdMall from '@/components/AdMall.vue';
-import AttentionUs from '@/components/AttentionUs.vue';
-import AdBottom from '@/components/AdBottom.vue';
+import Product from './components/Product.vue';
+import ExploreBanner from './components/ExploreBanner.vue';
+import LectureAd from './components/LectureAd.vue';
+import IndexLive from './components/IndexLive.vue';
+import AdMall from './components/AdMall.vue';
+import AttentionUs from './components/AttentionUs.vue';
+import AdBottom from './components/AdBottom.vue';
 import Mock from '@/mock/index.js';
-import AdDialog from '../components/AdDialog.vue';
-import { getSkuIds, getSkusByOrder } from './home/skus.js'
+import AdDialog from './components/AdDialog.vue';
+import { getSkuIds, getSkusByOrder } from './skus.js'
 import { debounce, getLink } from '@/common/util.js';
+import api from '@/common/api.js'
 // import skus from '@/mock/labelSkus.js';
 
 export default {
@@ -101,6 +129,12 @@ export default {
             order: 1,            // 排序 1：综合 2：最新上架 3：订阅数 4：价格 5：活动
             asc: 1,               // 1：升序 0：降序 用于价格排序
             ad: {},              // 广告弹窗
+            types: ['专栏', '视频课程', '微课', '每日一练', '大厂案例'],
+            labels: [],
+            isHover: false,
+            curType: 0,      // 选择形式
+            curDirection: 0, // 选择方向
+            curCategory: 0,  // 选择类别
         });
         let skusObj = {};   // 缓存skus
         let page = 1, pageSize = 10;
@@ -123,15 +157,16 @@ export default {
 
         function loadData() {
             getMenus();
-            getExploreAll();        
+            getExploreAll(); 
+            getLabels();       
             getLabelSkus();
-            getLectureList();
+            // getLectureList();
             getIndexLive(); 
             getPcInterstitial();
         }        
 
         async function getMenus() {
-            const menus = await ctx.$api.getMenuData({v: 26939623});
+            const menus = await api.getMenuData({v: 26939623});
             state.menus = menus;
         }
 
@@ -155,9 +190,17 @@ export default {
             }
         }
 
-        // TODO: save skus data, if exist, don't request again
-        async function getLabelSkus() {
-            const res = await ctx.$api.getLabelSkus({label_id: 0, type: 0});
+        async function getLabels() {
+            const res = await ctx.$api.getLabels({type: state.curType});
+            if (res.code == 0) {
+                state.types = res.data.nav;
+                state.labels = res.data.labels;
+            }
+        }
+
+        // TODO: save skus data, if exist, don't request again, maybe params lost when in proxy server
+        async function getLabelSkus(params) {
+            const res = await ctx.$api.getLabelSkus(params || {label_id: 0, type: state.curType});
             if (res.code == 0) {
                 state.skusData = res.data;
                 if (!skusObj[state.order]) skusObj[state.order] = getSkusByOrder(state.skusData, state.order, state.asc);
@@ -238,6 +281,33 @@ export default {
             getProductInfos();
         }
 
+        const enter = (e) => {
+            state.isHover = true;
+        }
+
+        const leave = (e) => {
+            state.isHover = false;
+        }
+
+        const chooseType = (val) => {
+            state.curType = val;
+            getLabels();   
+            skusObj[state.order] = null;    
+            getLabelSkus();
+        }
+
+        const chooseDirection = (val) => {
+            state.curDirection = val;
+            skusObj[state.order] = null;
+            getLabelSkus({label_id: state.curDirection, type: state.curType});
+        }
+
+        const chooseCategory = (val) => {
+            state.curCategory = val;
+            skusObj[state.order] = null;
+            getLabelSkus({label_id: state.curCategory, type: state.curDirection});
+        }
+
         onUpdated(() => {
             console.log('onUpdated')
         })
@@ -249,7 +319,12 @@ export default {
         return {
             ...toRefs(state),
             goLecture,
-            changeSku
+            changeSku,
+            enter,
+            leave,
+            chooseType,
+            chooseDirection,
+            chooseCategory
         };
     },
 }
@@ -318,6 +393,7 @@ export default {
     }
 }
 .explore {
+    margin-bottom: 26px;
     .top {
         justify-content: space-between;
         padding-right: 8px;
@@ -441,6 +517,63 @@ export default {
         color: #888;
         font-weight: 400;
     }
+}
+.types-sec {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 711px;
+    min-height: 180px;;
+    box-sizing: border-box;
+    border-radius: 2px;
+    box-shadow: 0px 2px 10px 0px rgb(46 61 72 / 5%);
+    .type-item {
+        margin-top: 14px;
+        display: flex;
+        align-items: baseline;
+        position: relative;
+        z-index: 10;
+        padding: 0 20px;
+        max-height: 74px;
+        overflow: hidden;
+        .type-labels {
+            flex-wrap: wrap;
+            a:hover {
+                color: $base-color;
+            }
+        }
+        span {
+            min-width: 50px;
+            padding-top: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #353535;
+        }
+        .label {
+            position: relative;
+            margin-right: 5px;
+            margin-bottom: 12px;
+            padding: 0 12px;
+            height: 22px;
+            line-height: 22px;
+            font-size: 14px;
+            font-weight: 400;
+            border-radius: 14px;
+            color: #888;
+            white-space: nowrap;
+        }
+        .choose {
+            font-weight: 500;
+            // color: #fa8919;
+            color: $base-color;
+            background: #fbf5ee;
+        }
+    }
+}
+.types-sec.hover {
+    .type-item {
+        max-height: unset;
+    }    
 }
 
 </style>

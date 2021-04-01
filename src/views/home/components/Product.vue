@@ -36,6 +36,7 @@
     </div>
 </template>
 <script>
+import { useRouter } from 'vue-router';
 
 export default {
     props: {
@@ -43,8 +44,11 @@ export default {
         productArticles: Object
     },
     setup() {
+        const router = useRouter();
+
         const goColumn = (item) => {
-            window.open('https://time.geekbang.org/column/intro/' + item.id, '_blank');
+            // window.open('https://time.geekbang.org/column/intro/' + item.id, '_blank');
+            router.push({ path: `/column/intro/${item.id}` });
         }
         const goArticle = (item) => {
             window.open('https://time.geekbang.org/column/article/' + item.id, '_blank');

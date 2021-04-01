@@ -95,3 +95,39 @@ export const throttle = (fn, delay = 500) => {
 		_running = false;
 	}, delay);
 }
+
+export const getSaleType = (saleType) => {
+	let type = '限时';
+	switch(saleType) {
+		case 1:
+			break;
+		case 2:
+			type = '限时';
+			break;    
+		case 3:
+			type = '拼团';
+			break; 
+		default:
+			break;
+
+	}
+	return type;
+}
+
+export const getSaleLabel = (price) => {
+	let type = getSaleType(price.sale_type);/*'限时';
+	switch(price.sale_type) {
+		case 1:
+			break;
+		case 2:
+			type = '限时';
+			break;    
+		case 3:
+			type = '拼团';
+			break; 
+		default:
+			break;
+
+	}*/
+	return type + ' ¥' + price.sale/100;
+}

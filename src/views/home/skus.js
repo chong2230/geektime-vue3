@@ -1,4 +1,5 @@
 export function getSkuIds(skus, page = 1, pageSize = 10) {
+    if (!skus) return '';
     let start = (page-1)*pageSize;
     let arr = skus.slice(start, start + pageSize);
     let ids = [];

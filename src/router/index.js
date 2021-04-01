@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/home/Home.vue'
 import Horde from '../views/Horde.vue'
 import University from '../views/University.vue'
 import Enterprise from '../views/Enterprise.vue'
@@ -7,6 +7,7 @@ import Mall from '../views/Mall.vue'
 import Exchange from '../views/Exchange.vue'
 import Download from '../views/Download.vue'
 import About from '../views/About.vue'
+import Intro from '../views/home/Intro.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -17,11 +18,13 @@ const routes = [
     { path: '/mall', component: Mall },
     { path: '/exchange', component: Exchange },
     { path: '/download', component: Download },
-    { path: '/about', component: About }
+    { path: '/about', component: About },
+    { path: '/column/intro/:id', component: Intro }
 ]
 
 const router = createRouter({
-    history: createWebHistory(),//createWebHashHistory(),
+    // history: createWebHistory(),//createWebHashHistory(),
+    history: createWebHashHistory(),
     routes
 })
 

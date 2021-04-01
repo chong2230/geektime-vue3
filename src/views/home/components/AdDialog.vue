@@ -4,7 +4,7 @@
             <img class="img" width="auto" height="auto" :src="src" alt="" 
                 @click="goLink" />
             <div class="close-btn" @click="close">
-                <img src="../assets/img/icon/close.png" />
+                <img src="@/assets/img/icon/close.png" />
             </div>
         </div>
     </div>
@@ -24,7 +24,7 @@ export default {
     },
     setup(props) {
         const state = reactive({
-            show: true
+            show: false
         })
         // return state;
         const close = () => {
