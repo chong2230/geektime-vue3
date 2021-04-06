@@ -33,10 +33,10 @@
                     <h3>下载 APP <span>随时随地学习</span></h3>
                     <div class="download-box">
                         <div class="download-btns">
-                            <a>
+                            <a @click="goStore(1)">
                                 <p>App Store 下载</p>
                             </a>
-                            <a class="android-btn">
+                            <a class="android-btn" @click="goStore(2)">
                                 <p>Android 下载</p>
                             </a>
                             <span class="download-label">
@@ -75,11 +75,11 @@
             <div class="more-sec">
                 <h3>看过的人还看了</h3>   
                 <section class="course-item" v-for="item in recommendProduct" :key="item.id">
-                    <div class="left">
+                    <div class="left" @click="goColumn(item.id)">
                         <img :src="item.author.avatar" alt="">
                     </div>
                     <div class="right">
-                        <a href="javascript:;" :title="item.title" class="course-title">{{item.title}}</a>
+                        <a href="javascript:;" :title="item.title" class="course-title" @click="goColumn(item.id)">{{item.title}}</a>
                         <div class="course-info">
                             <p class="author" :title="item.author.name + '  ' + item.author.intro">
                                 {{item.author.name + '  ' + item.author.intro}}
@@ -205,6 +205,18 @@ export default {
             return 'https://time.geekbang.org/column/article/' + id;
         }
 
+        const goStore = (type) => {
+            let url = 'https://apps.apple.com/cn/app/id1280245865';
+            if (type == 2) {
+                url = 'https://time.geekbang.org/download/android/latest';
+            }
+            window.open(url, '_blank');
+        }
+
+        const goColumn = (id) => {
+            window.open('https://time.geekbang.org/column/intro/' + id, '_blank');
+        }
+
         // watch监听route.params
         // watch(() => route.params, async newParams => {
         //     console.log(newParams)
@@ -216,7 +228,9 @@ export default {
             getSaleLabel,
             getUpdateLabel,
             collect,
-            getArticleLink
+            getArticleLink,
+            goStore,
+            goColumn
         }
     },
 }
@@ -306,7 +320,7 @@ export default {
             border-radius: 5px;
             line-height: 34px;
             // background: #fa8919;
-            background: $base-color;
+            background: $baseColor;
             color: #fff;
             font-weight: 400;
             font-size: 14px;
@@ -355,8 +369,8 @@ export default {
         opacity: .6;
     }
     &.has-collect {
-        color: $base-color;
-        border: 1px solid $base-color;
+        color: $baseColor;
+        border: 1px solid $baseColor;
     }
 }
 
@@ -555,6 +569,9 @@ export default {
             font-size: 16px;
             color: #404040;
             line-height: 20px;
+            &:hover {
+                text-decoration: underline;
+            }
         }
         
     }
@@ -629,6 +646,9 @@ export default {
 
 </style>
 <style lang="scss">
+.page {
+    margin-top: 60px;
+}
 .course-sec {
     .van-tabs {
         .van-tabs__wrap {
@@ -638,7 +658,7 @@ export default {
             // height: 50px;
         }
         .van-tabs__line {
-            background-color: $base-color;
+            background-color: $baseColor;
         }
     }
 }

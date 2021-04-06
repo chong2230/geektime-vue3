@@ -26,20 +26,20 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
-      '/static': {
+      '/stc': {
         target: 'https://static001.geekbang.org',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/static/, '')
+        rewrite: (path) => path.replace(/^\/stc/, '')
       },
       '/u': {
         target: 'https://u.geekbang.org',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/u/, '')
       },
-      '/account': {
+      '/act': {
         target: 'https://account.geekbang.org',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/account/, '')
+        rewrite: (path) => path.replace(/^\/act/, '')
       }
     }
   }

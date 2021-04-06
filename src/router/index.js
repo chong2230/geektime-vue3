@@ -8,6 +8,7 @@ import Exchange from '../views/Exchange.vue'
 import Download from '../views/Download.vue'
 import About from '../views/About.vue'
 import Intro from '../views/home/Intro.vue'
+import Login from '../views/account/Login.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -19,7 +20,8 @@ const routes = [
     { path: '/exchange', component: Exchange },
     { path: '/download', component: Download },
     { path: '/about', component: About },
-    { path: '/column/intro/:id', component: Intro }
+    { path: '/column/intro/:id', component: Intro },
+    { path: '/login', component: Login }
 ]
 
 const router = createRouter({

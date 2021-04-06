@@ -2,8 +2,8 @@ const Config = {
     // dev
     httpServer: '/api',
     uServer: '/u',
-    accountServer: '/account',
-    staticServer: '/static',
+    accountServer: '/act',
+    staticServer: '/stc',
     
     // prod
     // httpServer: 'https://time.geekbang.org',

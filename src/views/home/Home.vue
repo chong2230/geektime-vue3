@@ -65,7 +65,7 @@
             <div class="right">
                 <div class="content">
                     <div class="my-course">
-                        <button class="course-btn btn">我的课程</button>
+                        <button class="course-btn btn" @click="goMyCourse">我的课程</button>
                     </div>
                     <ExploreBanner :exploreBanner="exploreBanner"></ExploreBanner>
                     <LectureAd :lectureAd="lectureAd"></LectureAd>                    
@@ -82,6 +82,7 @@
 <script>
 import { reactive, ref, onMounted, onUpdated, onUnmounted } from 'vue'
 import { getCurrentInstance, toRefs } from '@vue/runtime-core'
+import { useRouter } from 'vue-router'
 import Header from '@/components/Header.vue';
 import Product from './components/Product.vue';
 import ExploreBanner from './components/ExploreBanner.vue';
@@ -111,6 +112,7 @@ export default {
     },
     setup() {
         const { ctx } = getCurrentInstance();
+        const router = useRouter();        
         const state = reactive({
             menus: [],
             lecturePath: {},    // 学习路径
@@ -308,6 +310,11 @@ export default {
             getLabelSkus({label_id: state.curCategory, type: state.curDirection});
         }
 
+        const goMyCourse = () => {
+            // const router = useRouter(); // 写在这里router为undefined
+            router.push('/login')
+        }
+
         onUpdated(() => {
             console.log('onUpdated')
         })
@@ -324,7 +331,8 @@ export default {
             leave,
             chooseType,
             chooseDirection,
-            chooseCategory
+            chooseCategory,
+            goMyCourse
         };
     },
 }
@@ -371,6 +379,7 @@ export default {
 <style lang="scss" scoped>
 .page {
     min-width: 1200px;
+    margin-top: 60px;
 }
 .main {
     justify-content: space-between;
@@ -539,7 +548,7 @@ export default {
         .type-labels {
             flex-wrap: wrap;
             a:hover {
-                color: $base-color;
+                color: $baseColor;
             }
         }
         span {
@@ -565,7 +574,7 @@ export default {
         .choose {
             font-weight: 500;
             // color: #fa8919;
-            color: $base-color;
+            color: $baseColor;
             background: #fbf5ee;
         }
     }

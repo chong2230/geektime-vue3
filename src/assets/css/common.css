@@ -55,6 +55,11 @@ section {
     padding: 0;
 }
 
+ol,
+ul {
+    list-style: none;
+}
+
 fieldset,
 img {
     border: 0;

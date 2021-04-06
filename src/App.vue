@@ -13,6 +13,7 @@
 
 <style>
 @import url('@/assets/css/common.css');
+@import url('//at.alicdn.com/t/font_2462358_paqs5o9ov2.css');
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -21,7 +22,7 @@
   /* text-align: center;  */
   color: #2c3e50;
   font-size: 12px;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 </style>
 <style lang="scss">
