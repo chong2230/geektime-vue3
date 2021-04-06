@@ -297,9 +297,6 @@ export default {
                     content: ""
                 }
             }
-            .arrow, .arrow::after {
-                
-            }
         }
     }
 }

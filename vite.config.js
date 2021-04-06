@@ -1,10 +1,19 @@
 const path = require('path')
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+const { resolve } = require('path')
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
+  build: {  // 配置多页面应用
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        account: resolve(__dirname, 'account/index.html')
+      }
+    }
+  },
   plugins: [vue()],
   resolve: {
     alias: [

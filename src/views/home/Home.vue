@@ -312,7 +312,8 @@ export default {
 
         const goMyCourse = () => {
             // const router = useRouter(); // 写在这里router为undefined
-            router.push('/login')
+            // router.push('/login')
+            location.href = '/account/';    // 多页应用
         }
 
         onUpdated(() => {
